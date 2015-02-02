@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:quartz="http://www.mulesoft.org/schema/mule/quartz" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/quartz http://www.mulesoft.org/schema/mule/quartz/current/mule-quartz.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+    <quartz:connector name="QuartzConn" validateConnections="true" doc:name="Quartz">
+        <quartz:factory-property key="org.quartz.scheduler.instanceName" value="MuleScheduler1"/>
+        <quartz:factory-property key="org.quartz.threadPool.class" value="org.quartz.simpl.SimpleThreadPool"/>
+        <quartz:factory-property key="org.quartz.threadPool.threadCount" value="3"/>
+        <quartz:factory-property key="org.quartz.scheduler.rmi.proxy" value="false"/>
+        <quartz:factory-property key="org.quartz.scheduler.rmi.export" value="false"/>
+        <quartz:factory-property key="org.quartz.jobStore.class" value="org.quartz.simpl.RAMJobStore"/>
+    </quartz:connector>
+    <flow name="cron-exampleFlow1" doc:name="cron-exampleFlow1">
+         
+     <quartz:inbound-endpoint jobName="startup-mule-job" repeatInterval="0" repeatCount="0" responseTimeout="10000" doc:name="Quartz" connector-ref="QuartzConn" cronExpression="0 0/2 * 1/1 * ? *">
+            <quartz:event-generator-job>
+                <quartz:payload>${prop}</quartz:payload>
+            </quartz:event-generator-job>
+        </quartz:inbound-endpoint>
+        <file:outbound-endpoint path="C:\Users\kpotlabathini\Desktop\input" responseTimeout="10000" doc:name="File"/>
+        
+        <logger level="INFO" doc:name="Logger" message="Quartz log  is : #[payload]"/>
+    </flow>
+</mule>
